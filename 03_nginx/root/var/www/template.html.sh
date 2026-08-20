@@ -45,7 +45,7 @@
             Development server.
          </p>
          <p>
-           (This Server and this page have been created <a href="https://github.com/JeanLescut/DataScience_stack_server">from this project</a>, under Creative Common License. Free to use both personally and commercially, to be modified or shared. Only attribution rule should be respected. )
+           (This Server and this page have been created <a href="https://github.com/JeanLescutMuller/bootstrap-vm">from this project</a>, under Creative Common License. Free to use both personally and commercially, to be modified or shared. Only attribution rule should be respected. )
          </p>
       </div>
       <div id="content">
