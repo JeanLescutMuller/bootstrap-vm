@@ -136,29 +136,45 @@ yum update && yum install -y git vim tree telnet wget
 </td></tr></table>
 
 ```bash
-git clone https://github.com/JeanLescutMuller/DataScience_stack_server.git
-cd ./DataScience_stack_server
+git clone https://github.com/JeanLescutMuller/bootstrap-vm.git
+cd ./bootstrap-vm
 ```
 
 ### 3. Setting up .bashrc for users :
 
+This step is **root-only** now. `configurebashrc` here exists purely to make the *root* shell
+usable while you're running the rest of this README as root (colors, history) - it is not meant
+for your own login user anymore, see step 3b below.
+
 ```bash
-# For root :
+# For root only:
 chmod +x ./01_unix_helpers/root/usr/sbin/adduser2
 chmod +x ./01_unix_helpers/root/usr/bin/configurebashrc
 cp -R ./01_unix_helpers/root/* /
 configurebashrc # root
-# host_color=31 configurebashrc # for PROD environment (make hostname RED)
+# host_color=31 configurebashrc # for PROD environment (make hostname RED)
 source ~/.bashrc
-
-# For other users as well :
-# add prefix host_color=31 for production environments
-sudo -u enrices configurebashrc # 👨‍💻 Perso
-sudo -u admin configurebashrc    # 🔶🔵 AWS EC2 Debian
-# sudo -u centos configurebashrc # 🔶🔴 AWS EC2 CentOS
-# sudo -u hadoop configurebashrc # 🔶🔶 AWS EMR
-# sudo -u jupyter configurebashrc # 🌀 GCP VertexAI VM
 ```
+
+### 3b. Setting up your own login shell: use `bootstrap-home`
+
+Do this **as early as possible** - before Anaconda/nginx/Jupyter below - so the rest of this
+setup happens in a shell you're actually comfortable in (colors, history, tmux, vim, git config).
+`bootstrap-vm` (this project) and
+[`bootstrap-home`](https://github.com/JeanLescutMuller/bootstrap-home) are mutually exclusive:
+this project only ever touches root's own shell during provisioning (step 3 above); every other
+user's login shell - `enrices`, `admin`, or any account you add - is entirely `bootstrap-home`'s
+job, and it produces the exact same setup on every machine (this VM, your laptop, any other box).
+
+```bash
+exit  # back to your own non-root login user (e.g. enrices)
+git clone https://github.com/JeanLescutMuller/bootstrap-home.git ~/dev/bootstrap-home
+cd ~/dev/bootstrap-home
+INSTALL=true bash bootstrap.sh
+exec $SHELL   # reload, or just open a fresh terminal/pane
+sudo su       # back to root to continue the rest of this README
+```
+
 Then you can also change the hostname :
 ```
 hostnamectl set-hostname frankfurt-1 # Change this to match name in EC2 interface
@@ -423,15 +439,13 @@ systemctl enable $appname.service # to start on boot
 
 # Bonus :
 
-## Configure git :
+## Jupyterlab git extension :
+
+Git itself (`user.name`/`user.email`/`pull.rebase`/credential helper) is already configured -
+that was step 3b's job (`bootstrap-home`), not this project's.
 
 ```bash
 exit # go back to your non-privileged account
-
-# Configure GIT :
-git config --global pull.rebase false
-git config --global user.name "Jean Lescut-Muller"
-git config --global user.email "jean.lescut@gmail.com"
 
 # Install Jupyterlab GIT Extension
 sudo /opt/anaconda3/bin/pip install --upgrade jupyterlab jupyterlab-git
