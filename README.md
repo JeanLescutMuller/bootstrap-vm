@@ -487,3 +487,21 @@ sed -i $'/:root/{e cat $tempdir/server_label.css\n}' $path # Adding the content 
 
 
 Palet : 🔴🟠🟡🟢🔵🟣🟤⚫⚪
+
+## Security hardening (`09_security/`)
+
+Added 2026-10-09 on H-Frank-1. Each script runs as root on the VM (`sudo bash <script>`), is safe to re-run, and logs to `~/09_security_<step>.log`.
+
+| Script | Does | Undo |
+|---|---|---|
+| `A_cleanup.sh` | removes Jupyter (service), nginx (+ home page), LLMNR; installs `logrotate` | none needed |
+| `C1_sshd.sh` | SSH keys only, no root login, reminder banner (`/etc/ssh/sshd_config.d/00-hardening.conf`); exception for Hostinger's browser terminal (`Match Address 169.254.0.1`) | automatic after 10 min unless `systemctl stop sshd-rollback.timer` |
+| `C2_firewall.sh` | nftables table `inet vm_firewall`: inbound allowed only for TCP 443 (SSH), UDP 41641 + `tailscale0` (Tailscale), `lo`, Docker bridges, ICMP, replies | automatic after 10 min unless `systemctl stop fw-rollback.timer` |
+
+```
+ Internet ──► firewall ──► TCP 443  sshd (keys only)
+                       └─► UDP 41641 Tailscale ──► tailscale0 ──► tailnet-only services
+ Hostinger browser terminal (169.254.0.1) ──► sshd, root + password
+```
+
+Note: the step 0 user-data above turns `PasswordAuthentication yes`; run `C1_sshd.sh` once keys are in place.

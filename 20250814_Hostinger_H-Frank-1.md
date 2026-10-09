@@ -6,13 +6,13 @@ This is a log of what has been succesfully done/deployed (and can be repeated) f
 
 
 ### 1. Create VM + Connect + Setup user & sshd
-`ssh root@{ip}` # The password is complex : lud1&holud4# (no % as it is not allowed)
+`ssh root@{ip}` # root password: in the password manager (never in this repo)
 
 Then :
 ```bash
 
 # Add Enrices
-useradd -m -p '$6$4CdskT3jsbvLxHNB$f0wBALv2CyaGKOAMu7bhsvG6.e6/MRd.Yx1m5CG.RrJgqN0Qm5O0TOt63wXBuLbPLGyNIrHs7RsCAyfVh3uul/' -s /bin/bash enrices
+useradd -m -p '{HASHED PASSWORD, see: openssl passwd -6}' -s /bin/bash enrices
 usermod -aG sudo enrices
 
 # Setup ssh on port 443 & Disable root login
@@ -231,3 +231,13 @@ sed -i $'/:root/{e cat $tempdir/server_label.css\n}' $path
 
 ### 15. Dark theme for Jupyterlab :
 I actually just changed it in the GUI...
+
+### 16. Security hardening (2026-10-09)
+
+Jupyter and nginx removed; SSH keys only; firewall. See `09_security/` and the README section "Security hardening". Steps 1, 4-12 above describe the original setup and are superseded on this VM: `PermitRootLogin`/`PasswordAuthentication` are now `no` (except Hostinger's browser terminal), and nothing listens on port 80 or 8000.
+
+| Public port | Now |
+|---|---|
+| TCP 443 | SSH, keys only (`HFrank1-from-MacbookPro`, `HFrank1-backup`, `HFrank1-from-GCP-mho` rsync-only) |
+| UDP 41641 | Tailscale |
+| anything else | blocked (`/etc/nftables.conf`, table `inet vm_firewall`) |
