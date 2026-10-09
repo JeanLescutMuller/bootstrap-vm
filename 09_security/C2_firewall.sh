@@ -1,9 +1,9 @@
 #!/bin/bash
 # Security step C2: firewall. Block everything coming in, except SSH (TCP 443),
-# Tailscale (UDP 41641 + anything on tailscale0), local and Docker bridges, ICMP,
+# Tailscale (UDP 41641 + anything on tailscale0), loopback, ICMP,
 # and replies to the VM's own traffic. IPv4 + IPv6. Outgoing traffic is not filtered.
 #
-# Uses its own nftables table only: Docker's and Tailscale's rules are left alone.
+# Uses its own nftables table only: Tailscale's rules are left alone.
 #
 # Lockout safety: an automatic undo runs 10 min after this script, unless cancelled with
 #   sudo systemctl stop fw-rollback.timer
@@ -36,8 +36,8 @@ EOF
 chmod 700 "$rollback"
 
 echo "== Write $conf"
-# Never 'flush ruleset' here (Debian's default does): it would also wipe Docker's
-# and Tailscale's rules whenever nftables.service is (re)started.
+# Never 'flush ruleset' here (Debian's default does): it would also wipe
+# Tailscale's rules whenever nftables.service is (re)started.
 cat > "$conf" <<'EOF'
 #!/usr/sbin/nft -f
 # Managed by bootstrap-vm 09_security/C2_firewall.sh
@@ -50,8 +50,6 @@ table inet vm_firewall {
         ct state invalid drop
         iifname "lo" accept
         iifname "tailscale0" accept
-        iifname "docker0" accept
-        iifname "br-*" accept
         meta l4proto { icmp, ipv6-icmp } accept
         tcp dport 443 accept comment "SSH"
         udp dport 41641 accept comment "Tailscale direct connections"
