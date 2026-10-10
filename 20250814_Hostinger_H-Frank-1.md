@@ -80,8 +80,8 @@ source ~/.bashrc
 sudo -u enrices configurebashrc # 👨‍💻 Perso
 # Note : I didnt do it for user "admin" since I am using "enrices" as a user (Added it in the user data script)
 
-# Changing the hostname :
-hostnamectl set-hostname H-Frank-1 # Change this
+# The machine's name, for good (also stops cloud-init from resetting it at boot) :
+bash 01_unix_helpers/set_hostname.sh H-Frank-1 # Change this
 ```
 
 ### 4. Installing Nginx :

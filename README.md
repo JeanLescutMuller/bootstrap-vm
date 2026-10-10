@@ -175,10 +175,9 @@ exec $SHELL   # reload, or just open a fresh terminal/pane
 sudo su       # back to root to continue the rest of this README
 ```
 
-Then you can also change the hostname :
+Then set the machine's name, for good (`/etc/hostname`, and cloud-init's `preserve_hostname: true` so a reboot never resets it; every project keys its data by this name, see "Machine name" in bootstrap-home's `files/home_AGENTS.md`):
 ```
-hostnamectl set-hostname frankfurt-1 # Change this to match name in EC2 interface
-vim /etc/cloud/cloud.cfg # I am NOT sure it is useful to make it persistent at reboot, but you could change `preserve_hostname: false` to `preserve_hostname: true`
+bash 01_unix_helpers/set_hostname.sh frankfurt-1 # Change this to match name in EC2 interface
 ```
 
 ### 4. (Optional) Dark theme for Jupyterlab in 🌀VertexAI :
