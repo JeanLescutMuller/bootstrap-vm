@@ -238,6 +238,6 @@ Jupyter and nginx removed; SSH keys only; firewall. See `09_security/` and the R
 
 | Public port | Now |
 |---|---|
-| TCP 443 | SSH, keys only (`HFrank1-from-MacbookPro`, `HFrank1-backup`; `HFrank1-from-GCP-mho`, rsync-only, removed 2026-10-10 with multi-host-orchestrator: GCP reaches the VM through GitHub only) |
+| TCP 443 | SSH, keys only (`HFrank1-from-MacbookPro`, `HFrank1-backup`; `HFrank1-from-Mac-job-runner`, `HFrank1-from-GCP-job-runner`: job-runner's own keys, limited to its `gate.sh`) |
 | UDP 41641 | Tailscale |
 | anything else | blocked (`/etc/nftables.conf`, table `inet vm_firewall`) |
